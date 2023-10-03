@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} To do list {% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row">
+            <h3>{{task.short_description}}</h3>
+            <p><b>Status: </b>{{task.status}}</p>
+            <p><b>Type: </b>{{task.type}}</p>
+            <div style="white-space: pre-wrap;">
+                <p><b>Detail description: </b>{{task.description}}</p>
+            </div>
+            <p class="gray-text"> Created_at: {{task.created_at}}</p>
+            <p class="gray-text"> Updated_at: {{task.updated_at}}</p>
+
+            <form action="{% url  'delete_task' task.id %}" method="POST" class="mb-2">
+                {% csrf_token %}
+                <button class="btn btn-outline-danger">Delete</button>
+            </form>
+        <p>
+            <a class="btn btn-outline-warning" href="{% url  'update_task' task.id %}" style="color: orange;">Update </a>
+            <a class="btn btn-outline-secondary" href="{% url  'all_tasks' %}" style="color: gray;">Go Back</a>
+        </p></div>
+</div>
+{% endblock %}
+

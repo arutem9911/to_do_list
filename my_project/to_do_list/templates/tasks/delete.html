@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} To do list {% endblock %}
+{% block content %}
+<h1>Are you sure you want to delete the task?</h1>
+<form action="{% url  'delete_task' task.id %}" method="POST">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-danger">Delete</button>
+  <a class="btn btn-secondary" href="{% url 'detail_task' task.id %}">Cancel</a>
+</form>
+{% endblock %}
+

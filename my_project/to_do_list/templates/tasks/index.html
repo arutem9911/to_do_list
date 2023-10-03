@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} To do list {% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        {% include 'partical/search_form.html' %}
+    </div>
+    <div class="row">
+        {% if not tasks %}
+        {% include 'partical/404_page_not_found.html' %}
+        {% endif %}
+        {% for task in tasks %}
+        <div class="col-2" style="margin: 15px; border: solid; border-color: gray; border-width: 1.2px;">
+            <h3>{{task.short_description}}</h3>
+            {% if task.status == 'new' %}
+            <p><b style="color: blue; border: solid; border-color: blue; border-width: 1px;">{{task.status}}</b></p>
+            {% elif task.status == 'in progress' %}
+            <p><b style="color: yellow; border: solid; border-color: yellow; border-width: 1px;">{{task.status}}</b></p>
+            {% else %}
+            <p><b style="color: green; border: solid; border-color: green; border-width: 1px;">{{task.status}}</b></p>
+            {% endif %}
+            <p class="gray-text">{{task.created_at}}</p>
+            <form action="{% url  'delete_task' task.id %}" method="POST" class="mb-2">
+                {% csrf_token %}
+                <button class="btn btn-outline-danger">Delete</button>
+            </form>
+        <p>
+            <a class="btn btn-outline-warning" href="{% url  'update_task' task.id %}" style="color: orange;">Update </a>
+            <a class="btn btn-outline-secondary" href="{% url  'detail_task' task.id %}" style="color: gray;">More... </a>
+        </p>
+        </div>
+        {% endfor %}
+
+    </div>
+    <div class="row">
+        {% if is_paginated %}
+        {% include 'partical/pagination.html' %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

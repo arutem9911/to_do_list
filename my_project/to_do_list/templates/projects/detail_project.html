@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} To do list {% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <h3>{{project.title}}</h3>
+        <div style="white-space: pre-wrap;">
+            <p><b>Description: </b>{{project.description}}</p>
+        </div>
+        <p class="gray-text"> Start Date: {{project.start_date}}</p>
+        <p class="gray-text"> End Date: {{project.end_date}}</p>
+
+            <form action="{% url 'delete_project' project.id %}" method="POST" class="mb-2">
+                {% csrf_token %}
+                <button class="btn btn-outline-danger">Delete</button>
+            </form>
+        <p>
+            <a class="btn btn-outline-warning" href="{% url 'update_project' project.id %}" style="color: orange;">Update </a>
+            <a class="btn btn-outline-secondary" href="{% url  'all_projects' %}" style="color: gray;">Go back </a>
+        </p>
+
+    <div class="row" style="padding: 30px; text-align: center;">
+        <h5>
+            Project Tasks
+        </h5>
+    </div>
+    <div class="row d-flex justify-content-evenly" style="text-align: center;">
+        {% for task in project.tasks.all %}
+        {% if task.project_id == project.id %}
+        <div class="col-3" style="margin: 15px; border: solid; border-color: gray; border-width: 1.2px;">
+            <h3>{{task.short_description}}</h3>
+            {% if task.status == 'new' %}
+            <p><b style="color: blue; border: solid; border-color: blue; border-width: 1px;">{{task.status}}</b></p>
+            {% elif task.status == 'in progress' %}
+            <p><b style="color: yellow; border: solid; border-color: yellow; border-width: 1px;">{{task.status}}</b></p>
+            {% else %}
+            <p><b style="color: green; border: solid; border-color: green; border-width: 1px;">{{task.status}}</b></p>
+            {% endif %}
+            <p class="gray-text">{{task.created_at}}</p>
+            <a href="{% url  'delete_task' task.id %}" style="color: red;">Delete   </a>
+            <a href="{% url  'update_task' task.id %}" style="color: orange;">Update   </a>
+            <a href="{% url  'detail_task' task.id %}">More... </a>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+    <div class="row">
+        <h5 class="mt-5">Add Project Task: </h5>
+        <form action="{% url 'new_project_task' project.id %}" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <p><button type="submit" class="btn btn-primary">Create</button> <a class="btn btn-secondary" href="/" role="button">Cancel</a></p>
+</form>
+    </div>
+</div>
+{% endblock %}
+

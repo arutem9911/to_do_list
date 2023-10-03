@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} Update task {% endblock %}
+{% block content %}
+<div class="container">
+    <form action="{% url 'update_task' task.id %}" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <p><button type="submit" class="btn btn-primary">Update</button> <a class="btn btn-secondary" href="/" role="button">Cancel</a></p>
+    </form>
+</div>
+
+{% endblock %}
+
