@@ -1,101 +1,41 @@
-from django.shortcuts import render
-from django.http import JsonResponse
-from datetime import datetime
 from to_do_list.models import Tasks, Project
 from api import serializers
-from rest_framework.views import APIView
-import json
+from rest_framework.viewsets import ModelViewSet
 
 
-class IndexTaskView(APIView):
-    def get(self, request, *args, **kwargs):
-        qs = Tasks.objects.all()
-        serializer = serializers.TaskSerializer(qs, many=True)
-        return JsonResponse(serializer.data, safe=False)
+class TaskViewSet(ModelViewSet):
+    queryset = Tasks.objects.all()
+    serializer_class = serializers.TaskGetSerializer
+    lookup_field = 'id'
+    lookup_url_kwarg = 'id'
+    method_serializers = {
+        'get': serializers.TaskGetSerializer,
+        'patch': serializers.TaskPartialUpdateSerializer
+    }
 
-    def post(self, request, *args, **kwargs):
-        data = json.loads(request.body)
-        serializer = serializers.TaskSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, safe=False)
-        else:
-            return JsonResponse(status=400, data={'errors': serializer.error_messages})
+    def method_serializer_class(self):
+        method = self.request.method.lower()
+        if method in self.method_serializers:
+            print(method)
+            return self.method_serializers.get(method)
 
-
-class TasksUpdateView(APIView):
-    def update(self, request, id_, partial: bool = True):
-        serializer = serializers.TaskSerializer
-        if partial:
-            serializer = serializers.TaskPartialUpdateSerializer
-
-        instance = Tasks.objects.get(id=id_)
-        data = json.loads(request.body)
-        serializer = serializer(data=data, instance=instance)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, safe=True)
-        else:
-            return JsonResponse(status=400, data={'errors': serializer.error_messages})
-
-    def put(self, request, id_, *args, **kwargs):
-        return self.update(request, id_, partial=False)
-
-    def patch(self, request, id_, *args, **kwargs):
-        return self.update(request, id_, partial=True)
-
-    def delete(self, request, id_, *args, **kwargs):
-        instance = Tasks.objects.get(id=id_)
-        instance.delete()
-        return JsonResponse(data={'success': 'Task wes deleted!'})
-
-    def get(self, request, id_, *args, **kwargs):
-        instance = Tasks.objects.get(id=id_)
-        serializer = serializers.TaskSerializer(instance)
-        return JsonResponse(serializer.data, safe=False)
+        return self.serializer_class
 
 
-class IndexProjectView(APIView):
-    def get(self, request, *args, **kwargs):
-        qs = Project.objects.all()
-        serializer = serializers.ProjectSerializer(qs, many=True)
-        return JsonResponse(serializer.data, safe=False)
+class ProjectViewSet(ModelViewSet):
+    queryset = Project.objects.all()
+    serializer_class = serializers.ProjectGetSerializer
+    lookup_field = 'id'
+    lookup_url_kwarg = 'id'
+    method_serializers = {
+        'get': serializers.ProjectGetSerializer,
+        'patch': serializers.TaskPartialUpdateSerializer
+    }
 
-    def post(self, request, *args, **kwargs):
-        data = json.loads(request.body)
-        serializer = serializers.ProjectSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, safe=False)
-        else:
-            return JsonResponse(status=400, data={'errors': serializer.error_messages})
+    def method_serializer_class(self):
+        method = self.request.method.lower()
+        if method in self.method_serializers:
+            return self.method_serializers.get(method)
 
-
-class ProjectUpdateView(APIView):
-    def update(self, request, id_, partial: bool = True):
-        serializer = serializers.ProjectSerializer
-        if partial:
-            serializer = serializers.ProjectPartialUpdateSerializer
-
-        instance = Project.objects.get(id=id_)
-        data = json.loads(request.body)
-        serializer = serializer(data=data, instance=instance)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, safe=True)
-        else:
-            return JsonResponse(status=400, data={'errors': serializer.error_messages})
-
-    def put(self, request, id_, *args, **kwargs):
-        return self.update(request, id_, partial=False)
-
-    def delete(self, request, id_, *args, **kwargs):
-        instance = Project.objects.get(id=id_)
-        instance.delete()
-        return JsonResponse(data={'success': 'Task wes deleted!'})
-
-    def get(self, request, id_, *args, **kwargs):
-        instance = Project.objects.get(id=id_)
-        serializer = serializers.ProjectSerializer(instance)
-        return JsonResponse(serializer.data, safe=False)
+        return self.serializer_class
 

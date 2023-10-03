@@ -18,11 +18,11 @@ class TaskPartialUpdateSerializer(serializers.ModelSerializer):
         fields = ['id', 'short_description', 'description', 'status', 'type', 'created_at', 'updated_at', 'project']
 
 
-class ProjectSerializer(serializers.ModelSerializer):
+class ProjectGetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
-        fields = ['id', 'start_date', 'end_date', 'title', 'description']
-        read_only_fields = ['id']
+        exclude = []
+        read_only_fields = ['id', 'start_date', 'end_date', 'title', 'description']
 
 
 class ProjectPartialUpdateSerializer(serializers.ModelSerializer):
@@ -30,6 +30,15 @@ class ProjectPartialUpdateSerializer(serializers.ModelSerializer):
     description = serializers.CharField(max_length=3000, required=False)
 
     class Meta:
-        model = Tasks
+        model = Project
         fields = ['id', 'start_date', 'end_date', 'title', 'description']
+
+
+class TaskGetSerializer(serializers.ModelSerializer):
+    project = ProjectGetSerializer()
+
+    class Meta:
+        model = Tasks
+        exclude = []
+        read_only_fields = ['id', 'created_at', 'updated_at', 'project']
 
